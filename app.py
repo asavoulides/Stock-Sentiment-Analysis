@@ -10,9 +10,8 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from datetime import datetime, timedelta
 
-
 # Initialize OpenAI API
-openai.api_key = "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"
+openai.api_key = ""
 
 # Initialize News API
 newsapi = NewsApiClient(api_key="3982781f3a644c7892bcdef212ff5b6f")
@@ -39,7 +38,11 @@ def plot_stock_data():
 
 
 # Function to perform sentiment analysis using GPT-3.5 Turbo
+total_analyzed = 0
+
+
 def analyze_sentiment(text):
+    global total_analyzed
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[
@@ -47,13 +50,16 @@ def analyze_sentiment(text):
                 "role": "user",
                 "content": f"""
           Please analyze the sentiment of the following text: '{text}'. Provide a numerical sentiment score between -1 (very negative) and 1 (very positive). 
-          The Score you give should be coorilated to if the article is good or bad new's for the company, you should not take into account the tone.
+          The Score you give should be coorilated to if the article is good or bad new's for the company's stock. If it is unclear you should make a best guess.
+          You should not take into account the tone.
           Only response in a number and a short text of explanation after the number with ":" as a separator.
           """,
             }
         ],
     )
     sentiment_response = response["choices"][0]["message"]["content"]
+    print(f"Analyzing News: {total_analyzed}")
+    total_analyzed += 1
     return sentiment_response  # This will now return the score and the short text
 
 
@@ -65,12 +71,13 @@ def open_url(url):
 # Fetch news articles
 def fetch_news(ticker):
     news = newsapi.get_everything(
-        q=ticker, language="en", sort_by="relevancy", page_size=30
+        q=ticker, language="en", sort_by="publishedAt", page_size=10
     )
     articles = [
         (article["title"], article["content"], article["url"])
         for article in news["articles"]
     ]
+    print("Articles Fetched")
     return articles
 
 
