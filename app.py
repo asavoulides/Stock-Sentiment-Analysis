@@ -12,10 +12,10 @@ from datetime import datetime, timedelta
 
 
 # Initialize OpenAI API
-openai.api_key = "YOUR API KEY"
+openai.api_key = "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"
 
 # Initialize News API
-newsapi = NewsApiClient(api_key="YOUR API KEY")
+newsapi = NewsApiClient(api_key="3982781f3a644c7892bcdef212ff5b6f")
 
 
 # Function to fetch stock data
